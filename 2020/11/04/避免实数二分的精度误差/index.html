@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lsqalpha.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="避免实数二分的精度误差。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="避免实数二分的精度误差">
+<meta property="og:url" content="http://lsqalpha.github.io/2020/11/04/%E9%81%BF%E5%85%8D%E5%AE%9E%E6%95%B0%E4%BA%8C%E5%88%86%E7%9A%84%E7%B2%BE%E5%BA%A6%E8%AF%AF%E5%B7%AE/index.html">
+<meta property="og:site_name" content="LsqAlpha">
+<meta property="og:description" content="避免实数二分的精度误差。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-04T03:03:11.000Z">
+<meta property="article:modified_time" content="2020-11-16T07:22:45.791Z">
+<meta property="article:author" content="LsqAlpha">
+<meta property="article:tag" content="LibreOJ">
+<meta property="article:tag" content="实数二分">
+<meta property="article:tag" content="精度误差">
+<meta property="article:tag" content="卡时">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://lsqalpha.github.io/2020/11/04/%E9%81%BF%E5%85%8D%E5%AE%9E%E6%95%B0%E4%BA%8C%E5%88%86%E7%9A%84%E7%B2%BE%E5%BA%A6%E8%AF%AF%E5%B7%AE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>避免实数二分的精度误差 | LsqAlpha</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LsqAlpha</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsqalpha.github.io/2020/11/04/%E9%81%BF%E5%85%8D%E5%AE%9E%E6%95%B0%E4%BA%8C%E5%88%86%E7%9A%84%E7%B2%BE%E5%BA%A6%E8%AF%AF%E5%B7%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LsqAlpha">
+      <meta itemprop="description" content="征服可能会受挫，但好奇从未停止">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LsqAlpha">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          避免实数二分的精度误差
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-04 11:03:11" itemprop="dateCreated datePublished" datetime="2020-11-04T11:03:11+08:00">2020-11-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%80%83%E8%AF%95%E6%8A%80%E5%B7%A7/" itemprop="url" rel="index"><span itemprop="name">考试技巧</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>避免实数二分的精度误差。</p>
+<a id="more"></a>
+<p>有这样一类题目，需要二分答案求解，要求四舍五入保留几位小数输出。</p>
+<p><strong>（以下均假设题目要求保留4位小数）</strong></p>
+<p>二分答案时，通常认为当 <span class="math inline">\(l\)</span> 和 <span class="math inline">\(r\)</span> 相差极小时答案正确，但是当答案刚好在舍入边界时仍有可能使答案错误。</p>
+<p>例如 <span class="math inline">\(l,r\)</span> 分别为 <span class="math inline">\(0.0000495\)</span> 和 <span class="math inline">\(0.0000505\)</span>，满足 <span class="math inline">\(r-l\le10^{-6}\)</span>，当答案为 <span class="math inline">\(0.0000499\)</span> 时输出 <span class="math inline">\(r\)</span> 会导致答案错，同理当答案为 <span class="math inline">\(0.0000500\)</span> 时输出 <span class="math inline">\(l\)</span> 也会导致答案错误。</p>
+<p>那么怎么避免呢？</p>
+<h3 id="法1">法1</h3>
+<p>显然 <span class="math inline">\(l\)</span> 和 <span class="math inline">\(r\)</span> 的差值越小，随机数据的正确率越高。</p>
+<p>当 <span class="math inline">\(r-l\le10^{-6}\)</span> 时，答案在 <code>(0.xxxx49,0.xxxx50)</code> 即可卡掉输出 <span class="math inline">\(r\)</span>，在 <code>[0.xxxx50,0.xxxx51)</code> 即可卡掉输出 <span class="math inline">\(l\)</span>，随机数据下错误的概率约为 <span class="math inline">\(\frac{10^{-6}}{10^{-4}}=1\%\)</span></p>
+<p>但是当 <span class="math inline">\(r-l\le10^{-12}\)</span> 时，答案需要在 <code>(0.xxxx49999999,0.xxxx50000000)</code> 才能卡掉输出 <span class="math inline">\(r\)</span>，在 <code>[0.xxxx50000000,0.xxxx50000001)</code> 才能卡掉输出 <span class="math inline">\(l\)</span>，随机数据下错误的概率仅约为 <span class="math inline">\(\frac{10^{-12}}{10^{-4}}=0.000001\%\)</span></p>
+<p>所以需要尽可能的减小 <span class="math inline">\(l\)</span> 和 <span class="math inline">\(r\)</span> 的差值来增加正确率，可以 <code>while(round(l*1e4)!=round(r*1e4))</code> 配合卡时使用。</p>
+<p><strong>注：此法需要出题人父母健在！</strong></p>
+<h3 id="法2">法2</h3>
+<p>如果在二分答案的过程中把方案存下来，最后输出用方案求得的答案，即可把答案区间变为确定性的一个值。</p>
+<p>但是如果在舍入边界附近有两个极为接近的答案，仍有可能使答案错误。</p>
+<p>例如一种方案的答案为 <span class="math inline">\(0.0000499\)</span>，另一种方案的答案为 <span class="math inline">\(0.0000500\)</span>，此时输出第一种方案的答案会使最大化问题的答案错误，输出第二种方案的答案会使最小化问题的答案错误。</p>
+<p>所以仍然需要尽可能的减小 <span class="math inline">\(l\)</span> 和 <span class="math inline">\(r\)</span> 的差值来增加正确率，可以使用卡时来获得最大的正确率。</p>
+<p><strong>注：此法仍然需要出题人父母健在！</strong></p>
+<h3 id="法3">法3</h3>
+<p>在最大化问题中，当 <span class="math inline">\(l\)</span> 的前4位小数和 <span class="math inline">\(r\)</span> 的前4位小数相同时（假设为 <code>xxxx</code>），直接 <code>check(0.xxxx5)</code>，如果通过，则答案区间为 <code>[0.xxxx5,r]</code>，否则答案区间为 <code>(l,0.xxxx5)</code>。</p>
+<p>同理在最小化问题中，当 <span class="math inline">\(l\)</span> 和 <span class="math inline">\(r\)</span> 的前4位小数相同时（假设为 <code>xxxx</code>），直接 <code>check(0.xxxx499999999999...)</code>，如果通过，则答案区间为 <code>[l,0.xxxx5)</code>，否则答案区间为 <code>[0.xxxx5,r)</code>。</p>
+<p>这种方法的正确性只依赖于计算机的实数精度，几乎避免了四舍五入所带来的精度误差，且常数最优。</p>
+<p>一道卡精度题：<a target="_blank" rel="noopener" href="https://loj.ac/problem/149">「LOJ 149」01分数规划</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/LibreOJ/" rel="tag"><i class="fa fa-tag"></i> LibreOJ</a>
+              <a href="/tags/%E5%AE%9E%E6%95%B0%E4%BA%8C%E5%88%86/" rel="tag"><i class="fa fa-tag"></i> 实数二分</a>
+              <a href="/tags/%E7%B2%BE%E5%BA%A6%E8%AF%AF%E5%B7%AE/" rel="tag"><i class="fa fa-tag"></i> 精度误差</a>
+              <a href="/tags/%E5%8D%A1%E6%97%B6/" rel="tag"><i class="fa fa-tag"></i> 卡时</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/02/%E6%A8%A1%E6%9D%BF%E6%B1%87%E6%80%BB/" rel="prev" title="模板汇总">
+      <i class="fa fa-chevron-left"></i> 模板汇总
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/07/CSP2020%E6%B8%B8%E8%AE%B0/" rel="next" title="CSP2020游记">
+      CSP2020游记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%951"><span class="nav-number">1.</span> <span class="nav-text">法1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%952"><span class="nav-number">2.</span> <span class="nav-text">法2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%953"><span class="nav-number">3.</span> <span class="nav-text">法3</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LsqAlpha"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LsqAlpha</p>
+  <div class="site-description" itemprop="description">征服可能会受挫，但好奇从未停止</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友链
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://shiroi-he.gitee.io/" title="https:&#x2F;&#x2F;shiroi-he.gitee.io&#x2F;" rel="noopener" target="_blank">shiroi</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LsqAlpha</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '096201df8846ef1e21ac',
+      clientSecret: '9a61230c7a8a232e82ea6720b86dd4ebd39a1d5c',
+      repo        : 'LsqAlpha.github.io',
+      owner       : 'LsqAlpha',
+      admin       : ['LsqAlpha'],
+      id          : '0ef5fe008ddd38cc5b84e4a747885de1',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lsqalpha.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Pollard-Rho质因数分解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「学习笔记」Pollard-Rho">
+<meta property="og:url" content="http://lsqalpha.github.io/2020/11/20/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Pollard-Rho/index.html">
+<meta property="og:site_name" content="LsqAlpha">
+<meta property="og:description" content="Pollard-Rho质因数分解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/png;base64,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">
+<meta property="article:published_time" content="2020-11-20T03:37:31.000Z">
+<meta property="article:modified_time" content="2020-11-20T06:56:12.006Z">
+<meta property="article:author" content="LsqAlpha">
+<meta property="article:tag" content="数学">
+<meta property="article:tag" content="Pollard-Rho">
+<meta property="article:tag" content="质因数分解">
+<meta property="article:tag" content="随机化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/png;base64,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">
+
+<link rel="canonical" href="http://lsqalpha.github.io/2020/11/20/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Pollard-Rho/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>「学习笔记」Pollard-Rho | LsqAlpha</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LsqAlpha</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsqalpha.github.io/2020/11/20/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Pollard-Rho/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LsqAlpha">
+      <meta itemprop="description" content="征服可能会受挫，但好奇从未停止">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LsqAlpha">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          「学习笔记」Pollard-Rho
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-20 11:37:31" itemprop="dateCreated datePublished" datetime="2020-11-20T11:37:31+08:00">2020-11-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Pollard-Rho质因数分解。</p>
+<a id="more"></a>
+<p>Pollard-Rho是一种玄学随机化算法，可以在期望 <span class="math inline">\(O(n^{\frac{1}{4}})\)</span> 的时间内找到一个 <span class="math inline">\(n\)</span> 的非平凡因子（除1和 <span class="math inline">\(n\)</span> 外的因数）。</p>
+<p>Pollard-Rho本质上是通过随机两个数作差和求gcd来增加随机到因数的概率。</p>
+<p><strong>随机两个数作差：</strong>假设 <span class="math inline">\(n\)</span> 的一个非平凡因子为 <span class="math inline">\(a\)</span>，对于 <span class="math inline">\((a,n-a)\)</span> 的任意一个 <span class="math inline">\(x\)</span>，随到 <span class="math inline">\(x-a\)</span> 和 <span class="math inline">\(x+a\)</span> 均可得到 <span class="math inline">\(a\)</span>，概率扩大了近一倍。</p>
+<p><strong>求gcd：</strong>只要随到与 <span class="math inline">\(n\)</span> 不互质的数即可得到一个非平凡因子，概率扩大为 <span class="math inline">\(\frac{n-\varphi(n)}{n}\)</span>。</p>
+<p>Pollard构造了一个序列：设 <span class="math inline">\(f(x)=(x^2+c)\bmod n\)</span>，<span class="math inline">\(x_i=f(x_{i-1})\)</span>，其中 <span class="math inline">\(c\)</span> 为一个 <span class="math inline">\([1,n-1]\)</span> 的随机数。</p>
+<p>只要每次取序列的相邻两项作差求gcd，那么随机到 <span class="math inline">\(n\)</span> 的一个非平凡因子的期望次数为 <span class="math inline">\(O(n^{\frac{1}{4}})\)</span>！</p>
+<p>但是这个序列也有一个问题：<span class="math inline">\(x_i\)</span> 的取值范围为 <span class="math inline">\([0,n-1]\)</span>，所以一定在某一时刻会代入之前出现过的值，然后开始循环，于是序列形如一个希腊字母 <span class="math inline">\(\rho\)</span>。</p>
+<p><img src="data:image/png;base64,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" /></p>
+<p>虽然 <span class="math inline">\(c\)</span> 在 <span class="math inline">\([1,n-1]\)</span> 中随机的话 <span class="math inline">\(\rho\)</span> 的期望环长为 <span class="math inline">\(\sqrt n\)</span>，但是也有一些不好的 <span class="math inline">\(c\)</span> 会使环长过短，以至于走完全程都没有找到 <span class="math inline">\(n\)</span> 的非平凡因子。遇到这种情况只需要重新随机一个 <span class="math inline">\(c\)</span> 即可，并不影响期望复杂度。但是这就牵扯到一个新的问题：判环。</p>
+<p><strong>Floyd判环</strong></p>
+<p>取两个数，一个以另一个的2倍速跑，由于速度不同所以一定会在环上相遇，相遇后退出。时间复杂度 <span class="math inline">\(O(n^{\frac{1}{4}}\log^2 n)\)</span>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> ll <span class="title">R</span><span class="params">(ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">static</span> ull seed;</span><br><span class="line">	<span class="keyword">return</span> (seed+=<span class="number">4179340454199820289l</span>l)%n;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">F</span><span class="params">(ll x,ll c,ll mod)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (qmul(x,x,mod)+c)%mod;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">pollard_rho</span><span class="params">(ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ll c=R(n)+<span class="number">1</span>,x=R(n),y=F(x,c,n),p=<span class="number">1</span>;</span><br><span class="line">	<span class="keyword">while</span>(x!=y&amp;&amp;(p==n||p==<span class="number">1</span>))</span><br><span class="line">	&#123;</span><br><span class="line">		p=gcd(n,<span class="built_in">abs</span>(x-y));</span><br><span class="line">		x=F(x,c,n);</span><br><span class="line">		y=F(F(y,c,n),c,n);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>倍增</strong></p>
+<p>倍增算法更加简单粗暴。假设当前走到了 <span class="math inline">\(x_{2^k}\)</span>，则把 <span class="math inline">\(\prod\limits_{i=2^k+1}^{2^{k+1}}|x_i-x_{2^k}|\)</span> 与 <span class="math inline">\(n\)</span> 求gcd，如果大于1直接返回，否则走到 <span class="math inline">\(x_{2^{k+1}}\)</span>。</p>
+<p><strong>127优化：</strong>显然如果 <span class="math inline">\(2^k\)</span> 过大，则<span class="math inline">\(\prod\limits_{i=2^k+1}^{2^{k+1}}|x_i-x_{2^k}|\)</span> 大概率为 <span class="math inline">\(n\)</span> 的倍数，效果不佳。那么就每127个计算一次gcd即可，同样优化了gcd的log。（玄学算法别太纠结为什么）</p>
+<p>时间复杂度 <span class="math inline">\(O(n^{\frac{1}{4}}\log n)\)</span>，其中 <span class="math inline">\(\log n\)</span> 为 <span class="math inline">\(n\)</span> 的质因子数量提供。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ll <span class="title">pollard_rho</span><span class="params">(ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ll s=<span class="number">0</span>,t=<span class="number">0</span>,c=R(n<span class="number">-1</span>)+<span class="number">1</span>,k=<span class="number">1</span>;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		ll d=<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">for</span>(ll i=<span class="number">1</span>;i&lt;=k;++i)</span><br><span class="line">		&#123;</span><br><span class="line">			t=F(t,c,n);</span><br><span class="line">			d=qmul(d,<span class="built_in">abs</span>(t-s),n);</span><br><span class="line">			<span class="keyword">if</span>(i%<span class="number">127</span>==<span class="number">0</span>&amp;&amp;gcd(d,n)&gt;<span class="number">1</span>) <span class="keyword">return</span> gcd(d,n);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span>(gcd(d,n)&gt;<span class="number">1</span>) <span class="keyword">return</span> gcd(d,n);</span><br><span class="line">		s=t; k&lt;&lt;=<span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后是分解质因数的完整代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> pri[<span class="number">8</span>]=&#123;<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">11</span>,<span class="number">13</span>,<span class="number">17</span>,<span class="number">37</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">inc</span><span class="params">(ll &amp;a,ll b,ll mod)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	a+=b; <span class="keyword">if</span>(a&gt;=mod) a-=mod;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">qmul</span><span class="params">(ll x,ll y,ll mod)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ll d=(ll)<span class="built_in">floor</span>((ldb)x*y/mod+<span class="number">0.5</span>);</span><br><span class="line">	ll res=x*y-d*mod;</span><br><span class="line">	<span class="keyword">if</span>(res&lt;<span class="number">0</span>) res+=mod;</span><br><span class="line">	<span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">qpow</span><span class="params">(ll a,ll b,ll mod)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ll t=<span class="number">1</span>;</span><br><span class="line">	<span class="keyword">while</span>(b)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span>(b&amp;<span class="number">1</span>) t=qmul(t,a,mod);</span><br><span class="line">		a=qmul(a,a,mod); b&gt;&gt;=<span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">miller_rabin</span><span class="params">(ll n,<span class="keyword">int</span> a)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ll d=n<span class="number">-1</span>; <span class="keyword">int</span> r=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span>(d%<span class="number">2</span>==<span class="number">0</span>) d&gt;&gt;=<span class="number">1</span>,++r;</span><br><span class="line">	ll t=qpow(a,d,n);</span><br><span class="line">	<span class="keyword">if</span>(t==<span class="number">1</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;r;++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span>(t==n<span class="number">-1</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		t=qmul(t,t,n);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">isprime</span><span class="params">(ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(n&lt;=<span class="number">1</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">8</span>;++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span>(n==pri[i]) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		<span class="keyword">if</span>(n%pri[i]==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">if</span>(!miller_rabin(n,pri[i])) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">gcd</span><span class="params">(ll a,ll b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(b==<span class="number">0</span>) <span class="keyword">return</span> a;</span><br><span class="line">	<span class="keyword">return</span> gcd(b,a%b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> ll <span class="title">R</span><span class="params">(ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">static</span> ull seed;</span><br><span class="line">	<span class="keyword">return</span> (seed+=<span class="number">4179340454199820289l</span>l)%n;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> ll <span class="title">F</span><span class="params">(ll x,ll c,ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (qmul(x,x,n)+c)%n;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ll <span class="title">pollard_rho</span><span class="params">(ll n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ll s=<span class="number">0</span>,t=<span class="number">0</span>,c=R(n<span class="number">-1</span>)+<span class="number">1</span>,k=<span class="number">1</span>;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		ll d=<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">for</span>(ll i=<span class="number">1</span>;i&lt;=k;++i)</span><br><span class="line">		&#123;</span><br><span class="line">			t=F(t,c,n);</span><br><span class="line">			d=qmul(d,<span class="built_in">abs</span>(t-s),n);</span><br><span class="line">			<span class="keyword">if</span>(i%<span class="number">127</span>==<span class="number">0</span>&amp;&amp;gcd(d,n)&gt;<span class="number">1</span>) <span class="keyword">return</span> gcd(d,n);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span>(gcd(d,n)&gt;<span class="number">1</span>) <span class="keyword">return</span> gcd(d,n);</span><br><span class="line">		s=t; k&lt;&lt;=<span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">pair</span>&lt;ll,<span class="keyword">int</span>&gt; &gt; fac;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">decompose</span><span class="params">(ll n,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(n&lt;=<span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line">	<span class="keyword">if</span>(isprime(n))</span><br><span class="line">	&#123;</span><br><span class="line">		fac.push_back(<span class="built_in">make_pair</span>(n,c)); <span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	ll t=n;</span><br><span class="line">	<span class="keyword">while</span>(t==n) t=pollard_rho(n);</span><br><span class="line">	<span class="keyword">int</span> k=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span>(n%t==<span class="number">0</span>) n/=t,++k;</span><br><span class="line">	decompose(t,c*k);</span><br><span class="line">	decompose(n,c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例题：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4718">「Luogu 4718」</a> （Floyd过不去，倍增要用 <span class="math inline">\(O(1)\)</span> 快速乘）</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 数学</a>
+              <a href="/tags/Pollard-Rho/" rel="tag"><i class="fa fa-tag"></i> Pollard-Rho</a>
+              <a href="/tags/%E8%B4%A8%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3/" rel="tag"><i class="fa fa-tag"></i> 质因数分解</a>
+              <a href="/tags/%E9%9A%8F%E6%9C%BA%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 随机化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/18/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Miller-Rabin%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/" rel="prev" title="「学习笔记」Miller-Rabin素性测试">
+      <i class="fa fa-chevron-left"></i> 「学习笔记」Miller-Rabin素性测试
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/25/SDOI2015-%E7%BA%A6%E6%95%B0%E4%B8%AA%E6%95%B0%E5%92%8C/" rel="next" title="「SDOI2015」约数个数和">
+      「SDOI2015」约数个数和 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LsqAlpha"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LsqAlpha</p>
+  <div class="site-description" itemprop="description">征服可能会受挫，但好奇从未停止</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友链
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://shiroi-he.gitee.io/" title="https:&#x2F;&#x2F;shiroi-he.gitee.io&#x2F;" rel="noopener" target="_blank">shiroi</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LsqAlpha</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '096201df8846ef1e21ac',
+      clientSecret: '9a61230c7a8a232e82ea6720b86dd4ebd39a1d5c',
+      repo        : 'LsqAlpha.github.io',
+      owner       : 'LsqAlpha',
+      admin       : ['LsqAlpha'],
+      id          : 'b01b21034cc6642901f2fe62e58e2601',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
