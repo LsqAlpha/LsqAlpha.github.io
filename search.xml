@@ -434,12 +434,12 @@
         <category>题解</category>
       </categories>
       <tags>
-        <tag>BZOJ</tag>
-        <tag>LibreOJ</tag>
-        <tag>Luogu</tag>
         <tag>CQOI</tag>
         <tag>组合数</tag>
         <tag>思维题</tag>
+        <tag>BZOJ</tag>
+        <tag>LibreOJ</tag>
+        <tag>Luogu</tag>
       </tags>
   </entry>
   <entry>
@@ -466,13 +466,13 @@
         <category>题解</category>
       </categories>
       <tags>
+        <tag>BZOJ</tag>
+        <tag>LibreOJ</tag>
+        <tag>Luogu</tag>
         <tag>NOI</tag>
         <tag>KMP</tag>
         <tag>倍增</tag>
-        <tag>BZOJ</tag>
-        <tag>LibreOJ</tag>
         <tag>UOJ</tag>
-        <tag>Luogu</tag>
       </tags>
   </entry>
   <entry>
